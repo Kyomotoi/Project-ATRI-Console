@@ -43,7 +43,7 @@ router.beforeEach((to, from, next) => {
   if (to.path === '/login') {
     next()
   } else {
-    var token = localStorage.getItem('Authorization')
+    let token = localStorage.getItem('Authorization')
     if (token === null || token === '') {
       toastr.warning("", "请先验证")
       next('/login')
