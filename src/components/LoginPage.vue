@@ -71,35 +71,32 @@ export default {
         return;
       }
 
-      var authURL =
-        "http://" +
-        authData.ip +
-        ":" +
-        authData.port +
-        "/capi/auth?token=" +
-        authData.token;
-      this.axios({
+      let baseURL = `http://${authData.ip}:${authData.port}/capi/`;
+      this.$axios({
         methods: "get",
-        url: authURL,
+        url: `${baseURL}auth?token=${authData.token}`,
         headers: {
           "content-type": "application/json",
         },
-      }).then(function (response) {
-        var d = response.data;
-        if (d.status != 200 && d.msg != "ok") {
-          _this.$toastr.error("", "请检查密钥是否输入正确");
-          return;
-        }
+      })
+        .then(function (resp) {
+          let d = resp.data;
+          if (d.status != 200 && d.msg != "OK") {
+            _this.$toastr.error("", "请检查密钥是否输入正确");
+            return;
+          }
 
-        _this.$toastr.success("", "验证通过");
+          _this.$toastr.success("", "验证通过");
 
-        _this.authing({
-          Authorization: _this.authForm.token,
+          _this.authing({
+            Authorization: _this.authForm.token,
+            BaseURL: baseURL,
+          });
+          _this.$router.push("/home");
+        })
+        .catch(() => {
+          _this.$toastr.error("", "该目标不存在实例");
         });
-
-        _this.$toastr.info("", "正在跳转...");
-        _this.$router.push("/home");
-      });
     },
   },
 };
