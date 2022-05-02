@@ -5,6 +5,9 @@
 <table>
     <tr>
         <td><img src="https://cdn.jsdelivr.net/gh/Kyomotoi/CDN@master/project/ATRI/console-show-0.jpg"></br><b>简介大方的登陆界面</b></td>
+        <td><img src="https://cdn.jsdelivr.net/gh/Kyomotoi/CDN@master/project/ATRI/console-show-1.png"><b>完善的数据可视化</b></td>
+    </tr>
+    <tr>
         <td><b>还有更多...正在快速更新递代中</b></td>
     </tr>
 </table>
