@@ -107,11 +107,12 @@ export default {
 
   methods: {
     LoginOut() {
-      var token = localStorage.getItem("Authorization");
+      let token = localStorage.getItem("Authorization");
       if (token === null || token === "") {
         this.$toastr.warning("", "请先验证");
       } else {
         localStorage.removeItem("Authorization");
+        localStorage.removeItem("BaseURL");
         this.$toastr.warning("", "已注销");
         this.$router.push("/login");
       }
