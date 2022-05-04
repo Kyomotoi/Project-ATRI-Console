@@ -84,7 +84,7 @@
       <v-card-text>单位: %</v-card-text>
       <v-container>
         <v-card flat class="mx-auto">
-          <v-card-title>Bot</v-card-title>
+          <v-card-title>Bot of platform</v-card-title>
           <div id="bot_d" style="width: 100%; height: 250%"></div>
         </v-card>
 
@@ -121,14 +121,13 @@ export default {
     stat_msg_icon: "mdi-server-off",
     stat_msg_text: "updating",
     b_running_time: "updating",
+    up_time: [],
     b_db_d: {
-      up_time: [],
       cpu: [],
       mem: [],
     },
     p_running_time: "updating",
     p_db_d: {
-      up_time: [],
       cpu: [],
       mem: [],
       disk: [],
@@ -161,7 +160,7 @@ export default {
     let m_docu = document.getElementById("msg_d");
     let m_c = echarts.init(m_docu);
 
-    function mainOverview() {
+    function main_overview() {
       let url = `${baseURL}auth?token=${token}`;
       _this
         .$axios({
@@ -189,7 +188,7 @@ export default {
           _this.$toastr.error("", "获取实例信息失败");
         });
 
-      let url_p = `${baseURL}runtime/platform?token=${token}`;
+      let url_p = `${baseURL}runtime?token=${token}`;
       _this
         .$axios({
           methods: "get",
@@ -199,51 +198,45 @@ export default {
           },
         })
         .then(function (resp) {
-          _this.stat_msg_text = resp.data.data.stat_msg;
+          _this.stat_msg_text = resp.data.data.platform.stat_msg;
           _this.stat_msg_co = "success";
           _this.stat_msg_icon = "mdi-server";
 
-          _this.p_running_time = resp.data.data.boot_time;
+          _this.b_running_time = resp.data.data.bot.bot_run_time;
+          _this.p_running_time = resp.data.data.platform.boot_time;
+
+          _this.up_time.push(new Date().toLocaleTimeString());
+
+          let raw_b_cpu = parseFloat(resp.data.data.bot.cpu_percent);
+          let raw_b_mem = parseFloat(resp.data.data.bot.mem_percent);
+          _this.b_db_d.cpu.push(raw_b_cpu.toFixed(2));
+          _this.b_db_d.mem.push(raw_b_mem.toFixed(2));
+
+          let raw_p_cpu = parseFloat(resp.data.data.platform.cpu_percent);
+          let raw_p_mem = parseFloat(resp.data.data.platform.mem_percent);
+          let raw_p_disk = parseFloat(resp.data.data.platform.disk_percent);
+          _this.p_db_d.cpu.push(raw_p_cpu.toFixed(2));
+          _this.p_db_d.mem.push(raw_p_mem.toFixed(2));
+          _this.p_db_d.disk.push(raw_p_disk.toFixed(2));
+
+          _this.net_inte_send = resp.data.data.platform.inte_send;
+          _this.net_inte_recv = resp.data.data.platform.inte_recv;
         })
         .catch(() => {
           _this.stat_msg_text = "ERROR";
           _this.stat_msg_co = "red";
           _this.stat_msg_icon = "mdi-server-off";
-          _this.$toastr.error("", "获取实例信息失败");
-        });
-    }
-
-    function b_dashb() {
-      let url_b = `${baseURL}runtime/bot?token=${token}`;
-
-      _this
-        .$axios({
-          methods: "get",
-          url: url_b,
-          headers: {
-            "content-type": "application/json",
-          },
-        })
-        .then(function (resp) {
-          _this.b_db_d.up_time.push(new Date().toLocaleTimeString());
-
-          let raw_b_cpu = parseFloat(resp.data.data.b_cpu);
-          let raw_b_mem = parseFloat(resp.data.data.b_mem);
-
-          _this.b_db_d.cpu.push(raw_b_cpu.toFixed(2));
-          _this.b_db_d.mem.push(raw_b_mem.toFixed(2));
-
-          _this.b_running_time = resp.data.data.bot_time;
-        })
-        .catch(() => {
-          b_docu.innerHTML = "获取实例信息失败";
         });
 
-      if (_this.b_db_d.up_time.length >= 75) _this.b_db_d.up_time.splice(0, 1);
+      if (_this.up_time.length >= 75) _this.up_time.splice(0, 1);
       if (_this.b_db_d.cpu.length >= 75) _this.b_db_d.cpu.splice(0, 1);
       if (_this.b_db_d.mem.length >= 75) _this.b_db_d.mem.splice(0, 1);
 
-      let option = {
+      if (_this.p_db_d.cpu.length >= 75) _this.p_db_d.cpu.splice(0, 1);
+      if (_this.p_db_d.mem.length >= 75) _this.p_db_d.mem.splice(0, 1);
+      if (_this.p_db_d.disk.length >= 75) _this.p_db_d.disk.splice(0, 1);
+
+      let b_option = {
         title: {
           subtext: "更新间隔: 3s",
           left: "10",
@@ -268,16 +261,34 @@ export default {
           {
             type: "category",
             boundaryGap: false,
-            data: _this.b_db_d.up_time,
+            data: _this.up_time,
           },
         ],
-        yAxis: [{ type: "value" }],
+        yAxis: {
+          axisLabel: {
+            formatter: "{value} %",
+            align: "center",
+          },
+        },
         series: [
           {
             name: "CPU Usage",
             type: "line",
-            stack: "Total",
-            areaStyle: {},
+            itemStyle: {
+              color: "#93eb34",
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgba(147,235,52,0.8)",
+                },
+                {
+                  offset: 1,
+                  color: "rgba(147,235,52,0.3)",
+                },
+              ]),
+            },
             emphasis: {
               focus: "series",
             },
@@ -286,8 +297,21 @@ export default {
           {
             name: "Mem Usage",
             type: "line",
-            stack: "Total",
-            areaStyle: {},
+            itemStyle: {
+              color: "#34c6eb",
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgba(52,198,235,0.8)",
+                },
+                {
+                  offset: 1,
+                  color: "rgba(52,198,235,0.3)",
+                },
+              ]),
+            },
             emphasis: {
               focus: "series",
             },
@@ -295,43 +319,8 @@ export default {
           },
         ],
       };
-      b_c.setOption(option);
+      b_c.setOption(b_option);
       window.onresize = b_c.resize;
-    }
-
-    function p_dashb() {
-      let url_p = `${baseURL}runtime/platform?token=${token}`;
-
-      _this
-        .$axios({
-          methods: "get",
-          url: url_p,
-          headers: {
-            "content-type": "application/json",
-          },
-        })
-        .then(function (resp) {
-          _this.p_db_d.up_time.push(new Date().toLocaleTimeString());
-
-          let raw_p_cpu = parseFloat(resp.data.data.p_cpu);
-          let raw_p_mem = parseFloat(resp.data.data.p_mem);
-          let raw_p_disk = parseFloat(resp.data.data.p_disk);
-
-          _this.p_db_d.cpu.push(raw_p_cpu.toFixed(2));
-          _this.p_db_d.mem.push(raw_p_mem.toFixed(2));
-          _this.p_db_d.disk.push(raw_p_disk.toFixed(2));
-
-          _this.net_inte_send = resp.data.data.inte_send;
-          _this.net_inte_recv = resp.data.data.inte_recv;
-        })
-        .catch(() => {
-          p_docu.innerHTML = "获取实例信息失败";
-        });
-
-      if (_this.p_db_d.up_time.length >= 75) _this.p_db_d.up_time.splice(0, 1);
-      if (_this.p_db_d.cpu.length >= 75) _this.p_db_d.cpu.splice(0, 1);
-      if (_this.p_db_d.mem.length >= 75) _this.p_db_d.mem.splice(0, 1);
-      if (_this.p_db_d.disk.length >= 75) _this.p_db_d.disk.splice(0, 1);
 
       let p_option = {
         title: {
@@ -358,16 +347,35 @@ export default {
           {
             type: "category",
             boundaryGap: false,
-            data: _this.p_db_d.up_time,
+            data: _this.up_time,
           },
         ],
-        yAxis: [{ type: "value" }],
+        yAxis: {
+          axisLabel: {
+            formatter: "{value} %",
+            align: "center",
+          },
+          max: 100,
+        },
         series: [
           {
             name: "CPU Usage",
             type: "line",
-            stack: "Total",
-            areaStyle: {},
+            itemStyle: {
+              color: "#93eb34",
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgba(147,235,52,0.8)",
+                },
+                {
+                  offset: 1,
+                  color: "rgba(147,235,52,0.3)",
+                },
+              ]),
+            },
             emphasis: {
               focus: "series",
             },
@@ -376,8 +384,21 @@ export default {
           {
             name: "Mem Usage",
             type: "line",
-            stack: "Total",
-            areaStyle: {},
+            itemStyle: {
+              color: "#34c6eb",
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgba(52,198,235,0.8)",
+                },
+                {
+                  offset: 1,
+                  color: "rgba(52,198,235,0.3)",
+                },
+              ]),
+            },
             emphasis: {
               focus: "series",
             },
@@ -386,8 +407,21 @@ export default {
           {
             name: "Disk Usage",
             type: "line",
-            stack: "Total",
-            areaStyle: {},
+            itemStyle: {
+              color: "#ebb734",
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgba(235,183,52,0.8)",
+                },
+                {
+                  offset: 1,
+                  color: "rgba(235,183,52,0.3)",
+                },
+              ]),
+            },
             emphasis: {
               focus: "series",
             },
@@ -400,8 +434,7 @@ export default {
     }
 
     function m_dashb() {
-      let url_m = `${baseURL}runtime/message?token=${token}`;
-
+      let url_m = `${baseURL}message?token=${token}`;
       _this
         .$axios({
           methods: "get",
@@ -412,11 +445,9 @@ export default {
         })
         .then(function (resp) {
           _this.m_db_d.up_time.push(new Date().toLocaleTimeString());
-
           _this.m_db_d.recv_msg.push(resp.data.data.recv_msg);
           _this.m_db_d.deal_msg.push(resp.data.data.deal_msg);
           _this.m_db_d.failed_deal_msg.push(resp.data.data.failed_deal_msg);
-
           _this.total_r_m = resp.data.data.total_r_m;
           _this.total_d_m = resp.data.data.total_d_m;
           _this.total_f_m = resp.data.data.total_f_m;
@@ -424,7 +455,6 @@ export default {
         .catch(() => {
           m_docu.innerHTML = "获取实例信息失败";
         });
-
       if (_this.m_db_d.up_time.length >= 75) _this.m_db_d.up_time.splice(0, 1);
       if (_this.m_db_d.recv_msg.length >= 75)
         _this.m_db_d.recv_msg.splice(0, 1);
@@ -461,13 +491,31 @@ export default {
             data: _this.m_db_d.up_time,
           },
         ],
-        yAxis: [{ type: "value" }],
+        yAxis: {
+          axisLabel: {
+            formatter: "{value} 条",
+            align: "center",
+          },
+        },
         series: [
           {
             name: "In",
             type: "line",
-            stack: "Total",
-            areaStyle: {},
+            itemStyle: {
+              color: "#93eb34",
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgba(147,235,52,0.8)",
+                },
+                {
+                  offset: 1,
+                  color: "rgba(147,235,52,0.3)",
+                },
+              ]),
+            },
             emphasis: {
               focus: "series",
             },
@@ -476,8 +524,21 @@ export default {
           {
             name: "Dealed",
             type: "line",
-            stack: "Total",
-            areaStyle: {},
+            itemStyle: {
+              color: "#34c6eb",
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgba(52,198,235,0.8)",
+                },
+                {
+                  offset: 1,
+                  color: "rgba(52,198,235,0.3)",
+                },
+              ]),
+            },
             emphasis: {
               focus: "series",
             },
@@ -486,8 +547,21 @@ export default {
           {
             name: "Failure",
             type: "line",
-            stack: "Total",
-            areaStyle: {},
+            itemStyle: {
+              color: "#eb3434",
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgba(235,52,52,0.8)",
+                },
+                {
+                  offset: 1,
+                  color: "rgba(235,52,52,0.3)",
+                },
+              ]),
+            },
             emphasis: {
               focus: "series",
             },
@@ -499,10 +573,13 @@ export default {
       window.onresize = m_c.resize;
     }
 
-    setInterval(mainOverview, 3000);
-    setInterval(b_dashb, 3000);
-    setInterval(p_dashb, 3000);
-    setInterval(m_dashb, 10000);
+    this.a = setInterval(main_overview, 3000);
+    this.b = setInterval(m_dashb, 10000);
+  },
+
+  beforeDestroy() {
+    window.clearInterval(this.a);
+    window.clearInterval(this.b);
   },
 };
 </script>
