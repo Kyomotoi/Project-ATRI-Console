@@ -3,6 +3,11 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+import VueGtag from 'vue-gtag'
+Vue.use(VueGtag, {
+  config: { id: 'G-2HYS55GFX1' }
+})
+
 import vuetify from './plugins/vuetify'
 import Vuetify from 'vuetify/lib'
 Vue.use(Vuetify)
