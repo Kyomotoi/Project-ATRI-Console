@@ -8,6 +8,7 @@
         <td><img src="https://cdn.jsdelivr.net/gh/Kyomotoi/CDN@master/project/ATRI/console-show-1.png"><b>完善的数据可视化</b></td>
     </tr>
     <tr>
+    <td><img src="https://cdn.jsdelivr.net/gh/Kyomotoi/CDN@master/project/ATRI/console-show-2.jpg"><b>开箱即用的控制中心</b></td>
         <td><b>还有更多...正在快速更新递代中</b></td>
     </tr>
 </table>
