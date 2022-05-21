@@ -13,6 +13,14 @@
     </tr>
 </table>
 
+## 快速上手
+
+本地自行运行，或者使用已构建好的页面 [atri-console.kyomotoi.moe](https://atri-console.kyomotoi.moe)
+
+向 [ATRI](https://github.com/Kyomotoi/ATRI) 索要登陆信息: `/con.auth`，按照页面提示依次键入即可.
+
+出于某些原因，该 Console **暂时**只支持同一网络下运行.
+
 ## 开发
 项目初始化:
 ```
@@ -24,55 +32,18 @@ npm run serve
 ```
 
 ## 贡献
-1. 加入我们的[讨论群](https://jq.qq.com/?_wv=1027&k=WoAAYXbJ)
-2. 提交 Issue/Pull Request
 
-**提交 Issue / Pull Request 前，你需要知道:**<br>
+如果你喜欢本项目，可以请我[喝杯红茶](https://afdian.net/@Kyomotoi).
 
-**Issue**:
+如果你有想法，有能力，欢迎:
+- [提交 Issue](https://github.com/Kyomotoi/ATRI/issues)
+- [提交 Pull request](https://github.com/Kyomotoi/ATRI/pulls)
+- [在交流群内进行反馈](https://jq.qq.com/?_wv=1027&k=WoAAYXbJ)
 
-提交之前，请先浏览被 close 的 Issue，因为该 Issue 很可能已经解决，或者，浏览已有的 Issues
+在提交 Issue、Pull request 前，请先阅读[此内容](https://atri.kyomotoi.moe/developer/overview/).
 
-接下来，我们将 Issue 分为以下几类，分别包含其所需提供的额外说明:
+## 许可
 
-> 标明 "*" 为必须提供
+本项目使用 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html).
 
-功能需求:
-1. 描述*
-2. 想要解决的方案*
-3. 相关代码
-4. 备用方案
-5. 其它说明
-
-问题询问:
-1. 描述*
-2. 其它说明
-
-报告漏洞/bug:
-1. 描述*（包括可能的触发方式，以方便进行复现）
-2. 操作环境*（包括当前正在运行的项目版本，操作系统及其配置）
-3. 可能的解决方案
-
-其它说明:
-- 如果有能力，推荐提交 Pull request，你的pr是对本项目的最大的帮助w
-
----
-
-**Pull Reuqest**:
-
-代码规范:
-1. 所提交的代码尽量与原仓库代码风格保持一致
-2. 变量名清晰明了，可以提供适当注释
-
-Commit 规范:
-1. 请确保你的每一个 commit 都有明确的意图，描述动作短小精练，尽量分 commit 表达意图
-2. commit 遵守 gitmoji 规范，可以参考以往的提交
-
-其它说明:
-> 如果你的pr类型是新增功能，请务必完成以下几点
-
-1. 遵守以上两项规范
-2. 不涉及任何可能存在的违反当地法律的行为
-
-## License
-[GPLv3](LICENSE)
+意味着你可以运行本项目，并向你的用户提供服务，如后续有对本项目源码的修改，你需要向用户公开修改后的此项目的源码.
