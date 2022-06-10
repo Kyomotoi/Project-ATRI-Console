@@ -71,7 +71,7 @@ export default {
         return;
       }
 
-      let baseURL = `//${authData.ip}:${authData.port}/capi/`;
+      let baseURL = `http://${authData.ip}:${authData.port}/capi/`;
       this.$axios({
         methods: "get",
         url: `${baseURL}auth?token=${authData.token}`,
