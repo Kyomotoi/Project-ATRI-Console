@@ -1,9 +1,5 @@
 <template>
   <v-app>
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="upgrade-insecure-requests"
-    />
     <v-card flat>
       <v-card-title>Status Overview</v-card-title>
       <v-container>
