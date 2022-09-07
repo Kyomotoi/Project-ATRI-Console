@@ -15,8 +15,6 @@
 
 ## 快速上手
 
-本地自行运行，或者使用已构建好的页面 [atri-console.imki.moe](https://atri-console.imki.moe/)
-
 向 [ATRI](https://github.com/Kyomotoi/ATRI) 索要登陆信息: `/con.auth`，按照页面提示依次键入即可.
 
 ## 开发
