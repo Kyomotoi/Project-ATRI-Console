@@ -1,103 +1,61 @@
 <template>
-  <v-app>
-    <v-card class="mx-auto my-12" align="center">
-      <v-card-title>Auth System</v-card-title>
+	<v-app>
+		<v-card class="mx-auto my-12" align="center">
+			<v-card-title>Auth System</v-card-title>
 
-      <v-container align="center">
-        <div align="left">
-          Enter IP:
-          <input type="text" v-model="authForm.ip" placeholder="ip" /><br />
-
-          Enter Port:
-          <input type="text" v-model="authForm.port" placeholder="port" /><br />
-
-          Enter Token:
-          <input
-            type="text"
-            v-model="authForm.token"
-            placeholder="token"
-          /><br />
-
-          or<br />
-          Enter Build Key:
-          <input
-            type="text"
-            v-model="authForm.build_key"
-            placeholder="暂时无用"
-          /><br />
-        </div>
-
-        <v-divider></v-divider>
-
-        <v-btn class="mr-2" target="_blank" text @click="authData"
-          >CONNECT</v-btn
-        >
-      </v-container>
-    </v-card>
-  </v-app>
+			<v-container align="center">
+				<div align="left">
+					<v-text-field label="Enter Token" v-model="token"></v-text-field>
+				</div>
+				<v-btn class="mr-2" target="_blank" text @click="authData">CONNECT</v-btn>
+			</v-container>
+		</v-card>
+	</v-app>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+	import { mapMutations } from "vuex";
 
-export default {
-  data() {
-    return {
-      authForm: {
-        ip: "",
-        port: "",
-        token: "",
-        build_key: "",
-      },
-    };
-  },
+	export default {
+		data: () => ({
+			token: ""
+		}),
 
-  methods: {
-    ...mapMutations(["authing"]),
-    authData() {
-      let _this = this;
-      let authData = this.authForm;
+		methods: {
+			...mapMutations(["authing"]),
+			authData() {
+				let _this = this;
 
-      if (!authData.ip || !authData.port || !authData.token) {
-        if (!authData.build_key) {
-          this.$toastr.warning("", "Missing content");
-          return;
-        } else {
-          this.$toastr.info("", "正在向服务器发送请求...");
+				if (!_this.token) {
+					this.$toastr.warning("", "缺少访问密钥");
+					return;
+				}
 
-          this.$toastr.success("", "服务器连接成功！");
-          this.$toastr.success("", "目标IP: " + "114514");
-        }
-        return;
-      }
+				this.$axios({
+					methods: "get",
+					url: `/capi/auth?token=${_this.token}`,
+					headers: {
+						"content-type": "application/json"
+					}
+				})
+					.then(function(resp) {
+						let d = resp.data;
+						if (d.status != 200 && d.msg != "OK") {
+							_this.$toastr.warning("", "请检查密钥是否输入正确");
+							return;
+						}
 
-      let baseURL = `http://${authData.ip}:${authData.port}/capi/`;
-      this.$axios({
-        methods: "get",
-        url: `${baseURL}auth?token=${authData.token}`,
-        headers: {
-          "content-type": "application/json",
-        },
-      })
-        .then(function (resp) {
-          let d = resp.data;
-          if (d.status != 200 && d.msg != "OK") {
-            _this.$toastr.error("", "请检查密钥是否输入正确");
-            return;
-          }
+						_this.$toastr.success("", "验证通过");
 
-          _this.$toastr.success("", "验证通过");
-
-          _this.authing({
-            Authorization: _this.authForm.token,
-            BaseURL: baseURL,
-          });
-          _this.$router.push("/home");
-        })
-        .catch(() => {
-          _this.$toastr.error("", "该目标不存在实例");
-        });
-    },
-  },
-};
+						_this.authing({
+							Authorization: _this.token
+						});
+						_this.$router.push("/home");
+					})
+					.catch(() => {
+						_this.$toastr.error("", "该目标不存在实例");
+					});
+			}
+		}
+	};
 </script>
