@@ -1,473 +1,526 @@
 <template>
-	<v-app>
-		<v-card flat>
-			<v-card-title>Service Control Center</v-card-title>
-			<v-container>
-				<v-item-group>
-					<v-row>
-						<v-col cols="12">
-							<v-expansion-panels>
-								<v-expansion-panel>
-									<v-expansion-panel-header>服务列表</v-expansion-panel-header>
-									<v-expansion-panel-content>
-										<v-container>
-											点击刷新
-											<v-btn @click="reloadService" target="_blank" text>
-												<v-icon>mdi-reload</v-icon>
-											</v-btn>
-										</v-container>
+  <v-app>
+    <v-card flat>
+      <v-card-title>Service Control Center</v-card-title>
+      <v-container>
+        <v-item-group>
+          <v-row>
+            <v-col cols="12">
+              <v-expansion-panels>
+                <v-expansion-panel>
+                  <v-expansion-panel-header>服务列表</v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <v-container>
+                      点击刷新
+                      <v-btn
+                        @click="reloadService"
+                        target="_blank"
+                        text
+                      >
+                        <v-icon>mdi-reload</v-icon>
+                      </v-btn>
+                    </v-container>
 
-										<v-row>
-											<v-col cols="12" sm="7" md="4" v-for="i in service_data" :key="i.id">
-												<v-card flat>
-													<v-container>
-														<v-card-title v-text="i.service_name"></v-card-title>
-														<v-card-subtitle v-text="i.service_docs"></v-card-subtitle>
-														<v-switch
-															v-model="i.is_enabled"
-															:label="`Global Enabled: ${i.is_enabled.toString()}`"
-															@click="
+                    <v-row>
+                      <v-col
+                        cols="12"
+                        sm="7"
+                        md="4"
+                        v-for="i in service_data"
+                        :key="i.id"
+                      >
+                        <v-card flat>
+                          <v-container>
+                            <v-card-title v-text="i.service_name"></v-card-title>
+                            <v-card-subtitle v-text="i.service_docs"></v-card-subtitle>
+                            <v-switch
+                              v-model="i.is_enabled"
+                              :label="`Global Enabled: ${i.is_enabled.toString()}`"
+                              @click="
                                 controlServiceEnab(i.service_name, i.is_enabled)
                               "
-														></v-switch>
+                            ></v-switch>
 
-														<v-expansion-panels flat>
-															<v-expansion-panel>
-																<v-expansion-panel-header>用户禁用列表</v-expansion-panel-header>
-																<v-expansion-panel-content v-for="a in i.disable_user" :key="a">
-																	<v-container>
-																		<v-chip :ripple="false">
-																			{{ a }}
-																			<v-icon
-																				@click="
+                            <v-expansion-panels flat>
+                              <v-expansion-panel>
+                                <v-expansion-panel-header>用户禁用列表</v-expansion-panel-header>
+                                <v-expansion-panel-content
+                                  v-for="a in i.disable_user"
+                                  :key="a"
+                                >
+                                  <v-container>
+                                    <v-chip :ripple="false">
+                                      {{ a }}
+                                      <v-icon @click="
                                           editServUserDisable(
                                             i.service_name,
                                             a,
                                             true
                                           )
-                                        "
-																			>mdi-window-close</v-icon>
-																		</v-chip>
-																	</v-container>
-																</v-expansion-panel-content>
+                                        ">mdi-window-close</v-icon>
+                                    </v-chip>
+                                  </v-container>
+                                </v-expansion-panel-content>
 
-																<v-divider></v-divider>
+                                <v-divider></v-divider>
 
-																<v-expansion-panel-content>
-																	<v-container>
-																		<v-row align="center">
-																			<div>
-																				<v-text-field label="Enter User ID" v-model="cache_text_u"></v-text-field>
-																			</div>
-																			<v-btn
-																				target="_blank"
-																				text
-																				@click="
+                                <v-expansion-panel-content>
+                                  <v-container>
+                                    <v-row align="center">
+                                      <div>
+                                        <v-text-field
+                                          label="Enter User ID"
+                                          v-model="cache_text_u"
+                                        ></v-text-field>
+                                      </div>
+                                      <v-btn
+                                        target="_blank"
+                                        text
+                                        @click="
                                           editServUserDisable(
                                             i.service_name,
                                             cache_text_u,
                                             false
                                           )
                                         "
-																			>Submit</v-btn>
-																		</v-row>
-																	</v-container>
-																</v-expansion-panel-content>
-															</v-expansion-panel>
+                                      >Submit</v-btn>
+                                    </v-row>
+                                  </v-container>
+                                </v-expansion-panel-content>
+                              </v-expansion-panel>
 
-															<v-expansion-panel>
-																<v-expansion-panel-header>群禁用列表</v-expansion-panel-header>
-																<v-expansion-panel-content v-for="a in i.disable_group" :key="a">
-																	<v-container>
-																		<v-chip :ripple="false">
-																			{{ a }}
-																			<v-icon
-																				@click="
+                              <v-expansion-panel>
+                                <v-expansion-panel-header>群禁用列表</v-expansion-panel-header>
+                                <v-expansion-panel-content
+                                  v-for="a in i.disable_group"
+                                  :key="a"
+                                >
+                                  <v-container>
+                                    <v-chip :ripple="false">
+                                      {{ a }}
+                                      <v-icon @click="
                                           editServGroupDisable(
                                             i.service_name,
                                             a,
                                             true
                                           )
-                                        "
-																			>mdi-window-close</v-icon>
-																		</v-chip>
-																	</v-container>
-																</v-expansion-panel-content>
+                                        ">mdi-window-close</v-icon>
+                                    </v-chip>
+                                  </v-container>
+                                </v-expansion-panel-content>
 
-																<v-divider></v-divider>
+                                <v-divider></v-divider>
 
-																<v-expansion-panel-content>
-																	<v-container>
-																		<v-row align="center">
-																			<div>
-																				<v-text-field label="Enter Group ID" v-model="cache_text_g"></v-text-field>
-																			</div>
-																			<v-btn
-																				target="_blank"
-																				text
-																				@click="
+                                <v-expansion-panel-content>
+                                  <v-container>
+                                    <v-row align="center">
+                                      <div>
+                                        <v-text-field
+                                          label="Enter Group ID"
+                                          v-model="cache_text_g"
+                                        ></v-text-field>
+                                      </div>
+                                      <v-btn
+                                        target="_blank"
+                                        text
+                                        @click="
                                           editServGroupDisable(
                                             i.service_name,
                                             cache_text_g,
                                             false
                                           )
                                         "
-																			>Submit</v-btn>
-																		</v-row>
-																	</v-container>
-																</v-expansion-panel-content>
-															</v-expansion-panel>
-														</v-expansion-panels>
-													</v-container>
-												</v-card>
-											</v-col>
-										</v-row>
-									</v-expansion-panel-content>
-								</v-expansion-panel>
+                                      >Submit</v-btn>
+                                    </v-row>
+                                  </v-container>
+                                </v-expansion-panel-content>
+                              </v-expansion-panel>
+                            </v-expansion-panels>
+                          </v-container>
+                        </v-card>
+                      </v-col>
+                    </v-row>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
 
-								<v-expansion-panel>
-									<v-expansion-panel-header>全局封禁列表</v-expansion-panel-header>
-									<v-expansion-panel-content>
-										<v-container>
-											点击刷新
-											<v-btn @click="reloadBlockList" target="_blank" text>
-												<v-icon>mdi-reload</v-icon>
-											</v-btn>
-										</v-container>
+                <v-expansion-panel>
+                  <v-expansion-panel-header>全局封禁列表</v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <v-container>
+                      点击刷新
+                      <v-btn
+                        @click="reloadBlockList"
+                        target="_blank"
+                        text
+                      >
+                        <v-icon>mdi-reload</v-icon>
+                      </v-btn>
+                    </v-container>
 
-										<v-card flat>
-											<v-expansion-panels flat>
-												<v-expansion-panel>
-													<v-expansion-panel-header>用户封禁列表</v-expansion-panel-header>
-													<v-expansion-panel-content v-for="i in block_list_u" :key="i">
-														<v-container>
-															<v-chip :ripple="false">
-																{{ i }}
-																<v-icon @click="editUserBlockList(false, i)">mdi-window-close</v-icon>
-															</v-chip>
-														</v-container>
-													</v-expansion-panel-content>
+                    <v-card flat>
+                      <v-expansion-panels flat>
+                        <v-expansion-panel>
+                          <v-expansion-panel-header>用户封禁列表</v-expansion-panel-header>
+                          <v-expansion-panel-content
+                            v-for="i in block_list_u"
+                            :key="i"
+                          >
+                            <v-container>
+                              <v-chip :ripple="false">
+                                {{ i }}
+                                <v-icon @click="editUserBlockList(false, i)">mdi-window-close</v-icon>
+                              </v-chip>
+                            </v-container>
+                          </v-expansion-panel-content>
 
-													<v-divider></v-divider>
+                          <v-divider></v-divider>
 
-													<v-expansion-panel-content>
-														<v-container>
-															<v-row align="center">
-																<div>
-																	<v-text-field label="Enter User ID" v-model="cache_text_b_u"></v-text-field>
-																</div>
-																<v-btn
-																	target="_blank"
-																	text
-																	@click="
+                          <v-expansion-panel-content>
+                            <v-container>
+                              <v-row align="center">
+                                <div>
+                                  <v-text-field
+                                    label="Enter User ID"
+                                    v-model="cache_text_b_u"
+                                  ></v-text-field>
+                                </div>
+                                <v-btn
+                                  target="_blank"
+                                  text
+                                  @click="
                                     editUserBlockList(true, cache_text_b_u)
                                   "
-																>Submit</v-btn>
-															</v-row>
-														</v-container>
-													</v-expansion-panel-content>
-												</v-expansion-panel>
+                                >Submit</v-btn>
+                              </v-row>
+                            </v-container>
+                          </v-expansion-panel-content>
+                        </v-expansion-panel>
 
-												<v-expansion-panel>
-													<v-expansion-panel-header>群封禁列表</v-expansion-panel-header>
-													<v-expansion-panel-content v-for="i in block_list_g" :key="i">
-														<v-container>
-															<v-chip :ripple="false">
-																{{ i }}
-																<v-icon @click="editGroupBlockList(false, i)">mdi-window-close</v-icon>
-															</v-chip>
-														</v-container>
-													</v-expansion-panel-content>
+                        <v-expansion-panel>
+                          <v-expansion-panel-header>群封禁列表</v-expansion-panel-header>
+                          <v-expansion-panel-content
+                            v-for="i in block_list_g"
+                            :key="i"
+                          >
+                            <v-container>
+                              <v-chip :ripple="false">
+                                {{ i }}
+                                <v-icon @click="editGroupBlockList(false, i)">mdi-window-close</v-icon>
+                              </v-chip>
+                            </v-container>
+                          </v-expansion-panel-content>
 
-													<v-divider></v-divider>
+                          <v-divider></v-divider>
 
-													<v-expansion-panel-content>
-														<v-container>
-															<v-row align="center">
-																<div>
-																	<v-text-field label="Enter Group ID" v-model="cache_text_b_g"></v-text-field>
-																</div>
-																<v-btn
-																	target="_blank"
-																	text
-																	@click="
+                          <v-expansion-panel-content>
+                            <v-container>
+                              <v-row align="center">
+                                <div>
+                                  <v-text-field
+                                    label="Enter Group ID"
+                                    v-model="cache_text_b_g"
+                                  ></v-text-field>
+                                </div>
+                                <v-btn
+                                  target="_blank"
+                                  text
+                                  @click="
                                     editGroupBlockList(true, cache_text_b_g)
                                   "
-																>Submit</v-btn>
-															</v-row>
-														</v-container>
-													</v-expansion-panel-content>
-												</v-expansion-panel>
-											</v-expansion-panels>
-										</v-card>
-									</v-expansion-panel-content>
-								</v-expansion-panel>
-							</v-expansion-panels>
-						</v-col>
-					</v-row>
-				</v-item-group>
-			</v-container>
-		</v-card>
-	</v-app>
+                                >Submit</v-btn>
+                              </v-row>
+                            </v-container>
+                          </v-expansion-panel-content>
+                        </v-expansion-panel>
+                      </v-expansion-panels>
+                    </v-card>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-col>
+          </v-row>
+        </v-item-group>
+      </v-container>
+    </v-card>
+  </v-app>
 </template>
 
 <script>
-	export default {
-		data: () => ({
-			service_data: [],
-			cache_text_u: "",
-			cache_text_g: "",
-			block_list_u: [],
-			block_list_g: [],
-			cache_text_b_u: "",
-			cache_text_b_g: ""
-		}),
+export default {
+  data: () => ({
+    service_data: [],
+    cache_text_u: "",
+    cache_text_g: "",
+    block_list_u: [],
+    block_list_g: [],
+    cache_text_b_u: "",
+    cache_text_b_g: "",
+  }),
 
-		mounted() {
-			let _this = this;
+  mounted() {
+    let _this = this;
 
-			let token = localStorage.getItem("Authorization");
+    let token = localStorage.getItem("Authorization");
 
-			function get_service() {
-				let url = `/capi/service/list?token=${token}`;
-				_this
-					.$axios({
-						methods: "get",
-						url: url,
-						headers: {
-							"content-type": "application/json"
-						}
-					})
-					.then(resp => {
-						_this.service_data = resp.data.data;
-					})
-					.catch(() => {
-						_this.$toastr.error("", "获取服务列表失败");
-					});
-			}
+    let domain = "";
+    let is_debug = localStorage.getItem("IsDebug");
+    if (is_debug === "y") {
+      let host = localStorage.getItem("Host");
+      let port = localStorage.getItem("Port");
+      domain = `http://${host}:${port}`;
+    }
 
-			function get_block_list() {
-				let url = `/capi/block/list?token=${token}`;
-				_this
-					.$axios({
-						methods: "get",
-						url: url,
-						headers: {
-							"content-type": "application/json"
-						}
-					})
-					.then(resp => {
-						let d = resp.data.data;
+    function get_service() {
+      let url = `${domain}/capi/service/list?token=${token}`;
+      _this
+        .$axios({
+          methods: "get",
+          url: url,
+          headers: {
+            "content-type": "application/json",
+          },
+        })
+        .then((resp) => {
+          _this.service_data = resp.data.data;
+        })
+        .catch(() => {
+          _this.$toastr.error("", "获取服务列表失败");
+        });
+    }
 
-						_this.block_list_u = Object.keys(d.user);
-						_this.block_list_g = Object.keys(d.group);
-					})
-					.catch(() => {
-						_this.$toastr.error("", "获取全局黑名单列表失败");
-					});
-			}
+    function get_block_list() {
+      let url = `${domain}/capi/block/list?token=${token}`;
+      _this
+        .$axios({
+          methods: "get",
+          url: url,
+          headers: {
+            "content-type": "application/json",
+          },
+        })
+        .then((resp) => {
+          let d = resp.data.data;
 
-			get_service();
-			get_block_list();
-		},
+          _this.block_list_u = Object.keys(d.user);
+          _this.block_list_g = Object.keys(d.group);
+        })
+        .catch(() => {
+          _this.$toastr.error("", "获取全局黑名单列表失败");
+        });
+    }
 
-		methods: {
-			getToken() {
-				return localStorage.getItem("Authorization");
-			},
+    get_service();
+    get_block_list();
+  },
 
-			reloadService() {
-				let url = `/capi/service/list?token=${this.getToken()}`;
-				this.$axios({
-					methods: "get",
-					url: url,
-					headers: {
-						"content-type": "application/json"
-					}
-				})
-					.then(resp => {
-						this.service_data = resp.data.data;
-						this.$toastr.success("", "刷新成功");
-					})
-					.catch(() => {
-						this.$toastr.error("", "获取服务列表失败");
-					});
-			},
+  methods: {
+    getToken() {
+      return localStorage.getItem("Authorization");
+    },
 
-			reloadBlockList() {
-				let url = `/capi/block/list?token=${this.getToken()}`;
-				this.$axios({
-					methods: "get",
-					url: url,
-					headers: {
-						"content-type": "application/json"
-					}
-				})
-					.then(resp => {
-						let d = resp.data.data;
+    isDebug() {
+      let domain = "";
+      let is_debug = localStorage.getItem("IsDebug");
+      if (is_debug === "y") {
+        let host = localStorage.getItem("Host");
+        let port = localStorage.getItem("Port");
+        domain = `http://${host}:${port}`;
+      }
+      return domain;
+    },
 
-						this.block_list_u = Object.keys(d.user);
-						this.block_list_g = Object.keys(d.group);
-						this.$toastr.success("", "刷新成功");
-					})
-					.catch(() => {
-						this.$toastr.error("", "获取全局黑名单列表失败");
-					});
-			},
+    reloadService() {
+      let url = `${this.isDebug()}/capi/service/list?token=${this.getToken()}`;
+      this.$axios({
+        methods: "get",
+        url: url,
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((resp) => {
+          this.service_data = resp.data.data;
+          this.$toastr.success("", "刷新成功");
+        })
+        .catch(() => {
+          this.$toastr.error("", "获取服务列表失败");
+        });
+    },
 
-			controlServiceEnab(serve, is_enab) {
-				let enab = is_enab ? 2 : 0;
+    reloadBlockList() {
+      let url = `${this.isDebug()}/capi/block/list?token=${this.getToken()}`;
+      this.$axios({
+        methods: "get",
+        url: url,
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((resp) => {
+          let d = resp.data.data;
 
-				let url = `/capi/service/control?token=${this.getToken()}&service=${serve}&is_enabled=${enab}`;
-				this.$axios({
-					methods: "get",
-					url: url,
-					headers: {
-						"content-type": "application/json"
-					}
-				})
-					.then(resp => {
-						if (resp.data.status != 200) {
-							this.$toastr.error("", "提交修改失败");
-							return;
-						}
-					})
-					.cache(() => {
-						this.$toastr.error("", "请求出错");
-					});
-			},
+          this.block_list_u = Object.keys(d.user);
+          this.block_list_g = Object.keys(d.group);
+          this.$toastr.success("", "刷新成功");
+        })
+        .catch(() => {
+          this.$toastr.error("", "获取全局黑名单列表失败");
+        });
+    },
 
-			editServUserDisable(serve, user_id, is_enab) {
-				let _this = this;
+    controlServiceEnab(serve, is_enab) {
+      let enab = is_enab ? 2 : 0;
 
-				if (!user_id) {
-					this.$toastr.warning("", "缺少必要信息");
-					return;
-				}
+      let url = `${this.isDebug()}/capi/service/control?token=${this.getToken()}&service=${serve}&is_enabled=${enab}`;
+      this.$axios({
+        methods: "get",
+        url: url,
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((resp) => {
+          if (resp.data.status != 200) {
+            this.$toastr.error("", "提交修改失败");
+            return;
+          }
+        })
+        .cache(() => {
+          this.$toastr.error("", "请求出错");
+        });
+    },
 
-				let enab = is_enab
-					? `enabled_user=${user_id}`
-					: `disable_user=${user_id}`;
+    editServUserDisable(serve, user_id, is_enab) {
+      let _this = this;
 
-				let url = `/capi/service/control?token=${this.getToken()}&service=${serve}&${enab}`;
-				this.$axios({
-					methods: "get",
-					url: url,
-					headers: {
-						"content-type": "application/json"
-					}
-				})
-					.then(resp => {
-						if (resp.data.status != 200) {
-							this.$toastr.error("", "提交修改失败");
-							return;
-						}
+      if (!user_id) {
+        this.$toastr.warning("", "缺少必要信息");
+        return;
+      }
 
-						let u = _this.service_data[serve].disable_user;
-						is_enab ? u.splice(u.indexOf(user_id), 1) : u.push(user_id);
-						_this.service_data[serve].disable_user = u;
-					})
-					.cache(() => {
-						this.$toastr.error("", "请求出错");
-					});
-			},
+      let enab = is_enab
+        ? `enabled_user=${user_id}`
+        : `disable_user=${user_id}`;
 
-			editServGroupDisable(serve, group_id, is_enab) {
-				let _this = this;
+      let url = `${this.isDebug()}/capi/service/control?token=${this.getToken()}&service=${serve}&${enab}`;
+      this.$axios({
+        methods: "get",
+        url: url,
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((resp) => {
+          if (resp.data.status != 200) {
+            this.$toastr.error("", "提交修改失败");
+            return;
+          }
 
-				if (!group_id) {
-					this.$toastr.warning("", "缺少必要信息");
-					return;
-				}
+          let u = _this.service_data[serve].disable_user;
+          is_enab ? u.splice(u.indexOf(user_id), 1) : u.push(user_id);
+          _this.service_data[serve].disable_user = u;
+        })
+        .cache(() => {
+          this.$toastr.error("", "请求出错");
+        });
+    },
 
-				let enab = is_enab
-					? `enabled_group=${group_id}`
-					: `disable_group=${group_id}`;
+    editServGroupDisable(serve, group_id, is_enab) {
+      let _this = this;
 
-				let url = `/capi/service/control?token=${this.getToken()}&service=${serve}&${enab}`;
-				this.$axios({
-					methods: "get",
-					url: url,
-					headers: {
-						"content-type": "application/json"
-					}
-				})
-					.then(resp => {
-						if (resp.data.status != 200) {
-							this.$toastr.error("", "提交修改失败");
-							return;
-						}
+      if (!group_id) {
+        this.$toastr.warning("", "缺少必要信息");
+        return;
+      }
 
-						let g = _this.service_data[serve].disable_group;
-						is_enab ? g.splice(g.indexOf(group_id), 1) : g.push(group_id);
-						_this.service_data[serve].disable_group = g;
-					})
-					.cache(() => {
-						this.$toastr.error("", "请求出错");
-					});
-			},
+      let enab = is_enab
+        ? `enabled_group=${group_id}`
+        : `disable_group=${group_id}`;
 
-			editUserBlockList(is_enab, user_id) {
-				let _this = this;
+      let url = `${this.isDebug()}/capi/service/control?token=${this.getToken()}&service=${serve}&${enab}`;
+      this.$axios({
+        methods: "get",
+        url: url,
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((resp) => {
+          if (resp.data.status != 200) {
+            this.$toastr.error("", "提交修改失败");
+            return;
+          }
 
-				if (!user_id) {
-					this.$toastr.warning("", "缺少必要信息");
-					return;
-				}
+          let g = _this.service_data[serve].disable_group;
+          is_enab ? g.splice(g.indexOf(group_id), 1) : g.push(group_id);
+          _this.service_data[serve].disable_group = g;
+        })
+        .cache(() => {
+          this.$toastr.error("", "请求出错");
+        });
+    },
 
-				let url = `/capi/block/edit?token=${this.getToken()}&is_enabled=${is_enab}&user_id=${user_id}`;
-				this.$axios({
-					methods: "get",
-					url: url,
-					headers: {
-						"content-type": "application/json"
-					}
-				})
-					.then(resp => {
-						if (resp.data.status != 200) {
-							this.$toastr.error("", "提交修改失败");
-							return;
-						}
+    editUserBlockList(is_enab, user_id) {
+      let _this = this;
 
-						let u = _this.block_list_u;
-						is_enab ? u.push(user_id) : u.splice(u.indexOf(user_id), 1);
-						_this.block_list_u = u;
-					})
-					.cache(() => {
-						this.$toastr.error("", "请求出错");
-					});
-			},
+      if (!user_id) {
+        this.$toastr.warning("", "缺少必要信息");
+        return;
+      }
 
-			editGroupBlockList(is_enab, group_id) {
-				let _this = this;
+      let url = `${this.isDebug()}/capi/block/edit?token=${this.getToken()}&is_enabled=${is_enab}&user_id=${user_id}`;
+      this.$axios({
+        methods: "get",
+        url: url,
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((resp) => {
+          if (resp.data.status != 200) {
+            this.$toastr.error("", "提交修改失败");
+            return;
+          }
 
-				if (!group_id) {
-					this.$toastr.warning("", "缺少必要信息");
-					return;
-				}
+          let u = _this.block_list_u;
+          is_enab ? u.push(user_id) : u.splice(u.indexOf(user_id), 1);
+          _this.block_list_u = u;
+        })
+        .cache(() => {
+          this.$toastr.error("", "请求出错");
+        });
+    },
 
-				let url = `/capi/block/edit?token=${this.getToken()}&is_enabled=${is_enab}&group_id=${group_id}`;
-				this.$axios({
-					methods: "get",
-					url: url,
-					headers: {
-						"content-type": "application/json"
-					}
-				})
-					.then(resp => {
-						if (resp.data.status != 200) {
-							this.$toastr.error("", "提交修改失败");
-							return;
-						}
+    editGroupBlockList(is_enab, group_id) {
+      let _this = this;
 
-						let g = _this.block_list_g;
-						is_enab ? g.push(group_id) : g.splice(g.indexOf(group_id), 1);
-						_this.block_list_g = g;
-					})
-					.cache(() => {
-						this.$toastr.error("", "请求出错");
-					});
-			}
-		}
-	};
+      if (!group_id) {
+        this.$toastr.warning("", "缺少必要信息");
+        return;
+      }
+
+      let url = `${this.isDebug()}/capi/block/edit?token=${this.getToken()}&is_enabled=${is_enab}&group_id=${group_id}`;
+      this.$axios({
+        methods: "get",
+        url: url,
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((resp) => {
+          if (resp.data.status != 200) {
+            this.$toastr.error("", "提交修改失败");
+            return;
+          }
+
+          let g = _this.block_list_g;
+          is_enab ? g.push(group_id) : g.splice(g.indexOf(group_id), 1);
+          _this.block_list_g = g;
+        })
+        .cache(() => {
+          this.$toastr.error("", "请求出错");
+        });
+    },
+  },
+};
 </script>

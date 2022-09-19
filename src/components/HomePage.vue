@@ -166,8 +166,16 @@
 			let m_docu = document.getElementById("msg_d");
 			let m_c = echarts.init(m_docu);
 
+			let domain = ""
+			let is_debug = localStorage.getItem("IsDebug")
+			if (is_debug === "y") {
+				let host = localStorage.getItem("Host")
+				let port = localStorage.getItem("Port")
+				domain = `http://${host}:${port}`
+			}
+
 			function main_overview() {
-				let url = `/capi/auth?token=${token}`;
+				let url = `${domain}/capi/auth?token=${token}`;
 				_this
 					.$axios({
 						methods: "get",
@@ -194,7 +202,7 @@
 						_this.$toastr.error("", "获取实例信息失败");
 					});
 
-				let url_p = `/capi/runtime?token=${token}`;
+				let url_p = `${domain}/capi/runtime?token=${token}`;
 				_this
 					.$axios({
 						methods: "get",
@@ -440,7 +448,7 @@
 			}
 
 			function m_dashb() {
-				let url_m = `/capi/message?token=${token}`;
+				let url_m = `${domain}/capi/message?token=${token}`;
 				_this
 					.$axios({
 						methods: "get",

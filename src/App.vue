@@ -110,6 +110,9 @@
 					this.$toastr.warning("", "请先验证");
 				} else {
 					localStorage.removeItem("Authorization");
+					localStorage.removeItem("IsDebug")
+					localStorage.removeItem("Host")
+					localStorage.removeItem("Port")
 					this.$toastr.warning("", "已注销");
 					this.$router.push("/login");
 				}

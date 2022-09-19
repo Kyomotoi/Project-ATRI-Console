@@ -6,7 +6,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     Authorization: localStorage.getItem('Authorization') ? localStorage.getItem('Authorization') : '',
-    isDebug: localStorage.getItem("isDebug") ? localStorage.getItem("isDebug") : '',
+    IsDebug: localStorage.getItem('IsDebug') ? localStorage.getItem('IsDebug') : 'n',
+    Host: localStorage.getItem('Host') ? localStorage.getItem('Host') : '',
+    Port: localStorage.getItem('Port') ? localStorage.getItem('Port') : '',
   },
   getters: {
   },
@@ -14,12 +16,16 @@ export default new Vuex.Store({
     authing(state, user) {
       state.Authorization = user.Authorization
       localStorage.setItem('Authorization', user.Authorization)
+      state.IsDebug = user.IsDebug
+      console.log(state.Authorization, state.IsDebug, state.Host, state.Port)
+      if (state.IsDebug === "y") {
+        localStorage.setItem('IsDebug', user.IsDebug)
+        state.Host = user.Host
+        localStorage.setItem('Host', user.Host)
+        state.Port = user.Port
+        localStorage.setItem('Port', user.Port)
+      }
     },
-
-    enabDebug(state, enab) {
-      state.isDebug = enab.isDebug
-      localStorage.setItem('isDebug', enab.isDebug)
-    }
   },
   actions: {
   },
