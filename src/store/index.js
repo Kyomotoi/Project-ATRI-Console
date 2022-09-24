@@ -17,7 +17,6 @@ export default new Vuex.Store({
       state.Authorization = user.Authorization
       localStorage.setItem('Authorization', user.Authorization)
       state.IsDebug = user.IsDebug
-      console.log(state.Authorization, state.IsDebug, state.Host, state.Port)
       if (state.IsDebug === "y") {
         localStorage.setItem('IsDebug', user.IsDebug)
         state.Host = user.Host
@@ -26,6 +25,11 @@ export default new Vuex.Store({
         localStorage.setItem('Port', user.Port)
       }
     },
+
+    debug_model(state, user) {
+      state.IsDebug = user.IsDebug
+      localStorage.setItem('IsDebug', user.IsDebug)
+    }
   },
   actions: {
   },
