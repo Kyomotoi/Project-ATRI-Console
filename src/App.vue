@@ -143,7 +143,10 @@ export default {
 
   created() {
     document.title = "Console";
-    localStorage.removeItem("IsDebug");
+
+    if (localStorage.getItem("IsDebug") != "y") {
+      localStorage.removeItem("IsDebug");
+    }
   },
 
   data: () => ({
@@ -152,7 +155,7 @@ export default {
   }),
 
   mounted() {
-		let _this = this;
+    let _this = this;
 
     function check_in_debugging() {
       _this.is_debugging =
