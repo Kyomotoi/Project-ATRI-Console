@@ -71,22 +71,12 @@
     </v-card>
 
     <div class="text-center">
-      <!-- <v-menu
-        v-model="is_debug"
-        transition="slide-y-transition"
-        offset-y
-        :nudge-width="200"
-        :close-on-content-click="false"
-      > -->
-      <!-- <template v-slot:activator="{ on, attrs }"> -->
       <v-btn
         :color="debug_button_color"
         :class="debug_button_class"
         depressed
         @click="debugTip(); change_button_color()"
       >DEBUG MODE</v-btn>
-      <!-- </template> -->
-      <!-- </v-menu> -->
     </div>
   </v-app>
 </template>
