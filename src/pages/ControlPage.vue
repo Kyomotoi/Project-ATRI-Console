@@ -52,7 +52,7 @@
                                     <v-chip :ripple="false">
                                       {{ a }}
                                       <v-icon @click="
-                                          editServUserDisable(
+                                          controlServUserDisable(
                                             i.service,
                                             a,
                                             true
@@ -77,7 +77,7 @@
                                         target="_blank"
                                         text
                                         @click="
-                                          editServUserDisable(
+                                          controlServUserDisable(
                                             i.service,
                                             cache_text_u,
                                             false
@@ -99,7 +99,7 @@
                                     <v-chip :ripple="false">
                                       {{ a }}
                                       <v-icon @click="
-                                          editServGroupDisable(
+                                          controlServGroupDisable(
                                             i.service,
                                             a,
                                             true
@@ -124,7 +124,7 @@
                                         target="_blank"
                                         text
                                         @click="
-                                          editServGroupDisable(
+                                          controlServGroupDisable(
                                             i.service_name,
                                             cache_text_g,
                                             false
@@ -390,7 +390,7 @@ export default {
         });
     },
 
-    editServUserDisable(serve, user_id, is_enab) {
+    controlServUserDisable(serve, user_id, is_enab) {
       let _this = this;
 
       if (!user_id) {
@@ -423,7 +423,7 @@ export default {
         });
     },
 
-    editServGroupDisable(serve, group_id, is_enab) {
+    controlServGroupDisable(serve, group_id, is_enab) {
       let _this = this;
 
       if (!group_id) {
