@@ -3,10 +3,10 @@ import toastr from 'toastr'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import LoginPage from '../components/LoginPage.vue'
-import HomePage from '../components/HomePage.vue'
-import ControlPage from '../components/ControlPage.vue'
-import ChatPage from '../components/ChatPage.vue'
+import LoginPage from '../pages/LoginPage.vue'
+import HomePage from '../pages/HomePage.vue'
+import ControlPage from '../pages/ControlPage.vue'
+import ChatPage from '../pages/ChatPage.vue'
 
 Vue.use(VueRouter)
 

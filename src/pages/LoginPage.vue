@@ -125,7 +125,7 @@ export default {
       })
         .then((resp) => {
           let d = resp.data;
-          if (d.status != 200 && d.msg != "OK") {
+          if (d.detail != "OK") {
             _this.$toastr.warning("", "请检查密钥是否输入正确");
             return;
           }

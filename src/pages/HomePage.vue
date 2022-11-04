@@ -48,7 +48,7 @@
                   outlined
                   x-small
                 >
-                  {{ net_inte_recv }} MB
+                  {{ net_recv }} MB
                 </v-chip><br />
 
                 环境网络-发:
@@ -57,7 +57,7 @@
                   outlined
                   x-small
                 >
-                  {{ net_inte_send }} MB
+                  {{ net_sent }} MB
                 </v-chip>
               </p>
 
@@ -195,21 +195,20 @@ import * as echarts from "echarts";
 
 export default {
   data: () => ({
-    stat_co: "",
-    stat_str: "updating",
-    stat_msg_co: "",
-    stat_msg_text: "updating",
+    stat_co: "red",
+    stat_str: "Offline",
+    stat_msg_co: "red",
+    stat_msg_text: "ERROR",
     stat_update_time: "updating",
 
-    net_inte_send: "updating",
-    net_inte_recv: "updating",
+    net_sent: "updating",
+    net_recv: "updating",
 
     total_r_m: "updating",
     total_d_m: "updating",
     total_f_m: "updating",
     rmr: "0",
     recv_msg: [],
-    rmr_update_time: "updating",
 
     b_running_time: "updating",
     up_time: [],
@@ -236,80 +235,51 @@ export default {
     let p_docu = document.getElementById("platform_d");
     let p_c = echarts.init(p_docu);
 
-    let domain = "";
-    let is_debug = localStorage.getItem("IsDebug");
-    if (is_debug === "y") {
-      let host = localStorage.getItem("Host");
-      let port = localStorage.getItem("Port");
-      domain = `http://${host}:${port}`;
+    let host = localStorage.getItem("Host");
+    let port = localStorage.getItem("Port");
+
+    let moWS = null;
+    let msgWS = null;
+
+    function mainOverview() {
+      let wsURL = `ws://${host}:${port}/capi/runtime?token=${token}`;
+      moWS = new WebSocket(wsURL);
+      moWS.onmessage = (event) => {
+        _this.stat_co = "green";
+        _this.stat_str = "Online";
+
+        let data = JSON.parse(event.data);
+
+        _this.stat_msg_text = data.status_message;
+        _this.stat_msg_co = "success";
+
+        _this.b_running_time = data.bot_info.run_time;
+        _this.p_running_time = data.platform_info.boot_time;
+
+        _this.up_time.push(new Date().toLocaleTimeString());
+
+        let raw_b_cpu = parseFloat(data.bot_info.cpu_percent);
+        let raw_b_mem = parseFloat(data.bot_info.mem_percent);
+        _this.b_db_d.cpu.push(raw_b_cpu.toFixed(2));
+        _this.b_db_d.mem.push(raw_b_mem.toFixed(2));
+
+        let raw_p_cpu = parseFloat(data.platform_info.cpu_percent);
+        let raw_p_mem = parseFloat(data.platform_info.mem_percent);
+        let raw_p_disk = parseFloat(data.platform_info.disk_percent);
+        _this.p_db_d.cpu.push(raw_p_cpu.toFixed(2));
+        _this.p_db_d.mem.push(raw_p_mem.toFixed(2));
+        _this.p_db_d.disk.push(raw_p_disk.toFixed(2));
+
+        _this.net_sent = data.platform_info.net_sent;
+        _this.net_recv = data.platform_info.net_recv;
+      };
+
+      moWS.onclose = () => {
+        _this.$toastr.warning("", "ws连接已断开");
+      };
     }
 
-    function main_overview() {
-      let url = `${domain}/capi/auth?token=${token}`;
-      _this
-        .$axios({
-          methods: "get",
-          url: url,
-          headers: {
-            "content-type": "application/json",
-          },
-        })
-        .then(function (resp) {
-          let d = resp.data;
-          if (d.status != 200 && d.msg != "OK") {
-            _this.$toastr.error("", "实例出现问题");
-            _this.stat_co = "red";
-            _this.stat_str = "Offline";
-          } else {
-            _this.stat_co = "green";
-            _this.stat_str = "Online";
-          }
-        })
-        .catch(() => {
-          _this.$toastr.error("", "实例已离线");
-          _this.stat_co = "red";
-          _this.stat_str = "Offline";
-          _this.$toastr.error("", "获取实例信息失败");
-        });
-
-      let url_p = `${domain}/capi/runtime?token=${token}`;
-      _this
-        .$axios({
-          methods: "get",
-          url: url_p,
-          headers: {
-            "content-type": "application/json",
-          },
-        })
-        .then(function (resp) {
-          _this.stat_msg_text = resp.data.data.platform.stat_msg;
-          _this.stat_msg_co = "success";
-
-          _this.b_running_time = resp.data.data.bot.bot_run_time;
-          _this.p_running_time = resp.data.data.platform.boot_time;
-
-          _this.up_time.push(new Date().toLocaleTimeString());
-
-          let raw_b_cpu = parseFloat(resp.data.data.bot.cpu_percent);
-          let raw_b_mem = parseFloat(resp.data.data.bot.mem_percent);
-          _this.b_db_d.cpu.push(raw_b_cpu.toFixed(2));
-          _this.b_db_d.mem.push(raw_b_mem.toFixed(2));
-
-          let raw_p_cpu = parseFloat(resp.data.data.platform.cpu_percent);
-          let raw_p_mem = parseFloat(resp.data.data.platform.mem_percent);
-          let raw_p_disk = parseFloat(resp.data.data.platform.disk_percent);
-          _this.p_db_d.cpu.push(raw_p_cpu.toFixed(2));
-          _this.p_db_d.mem.push(raw_p_mem.toFixed(2));
-          _this.p_db_d.disk.push(raw_p_disk.toFixed(2));
-
-          _this.net_inte_send = resp.data.data.platform.inte_send;
-          _this.net_inte_recv = resp.data.data.platform.inte_recv;
-        })
-        .catch(() => {
-          _this.stat_msg_text = "ERROR";
-          _this.stat_msg_co = "red";
-        });
-
+    function dealOverviewInfo() {
       if (_this.up_time.length >= 75) _this.up_time.splice(0, 1);
       if (_this.b_db_d.cpu.length >= 75) _this.b_db_d.cpu.splice(0, 1);
       if (_this.b_db_d.mem.length >= 75) _this.b_db_d.mem.splice(0, 1);
@@ -520,27 +490,24 @@ export default {
       window.onresize = p_c.resize;
     }
 
-    function get_msg_info() {
-      let url_m = `${domain}/capi/message?token=${token}`;
-      _this
-        .$axios({
-          methods: "get",
-          url: url_m,
-          headers: {
-            "content-type": "application/json",
-          },
-        })
-        .then(function (resp) {
-          _this.recv_msg.push(Number(resp.data.data.recv_msg));
-          _this.total_r_m = resp.data.data.total_r_m;
-          _this.total_d_m = resp.data.data.total_d_m;
-          _this.total_f_m = resp.data.data.total_f_m;
-        })
-        .catch(() => {
-          _this.$toastr.warning("", "获取信息数据失败");
-        });
+    function getMessageInfo() {
+      let wsURL = `ws://${host}:${port}/capi/message?token=${token}`;
+      msgWS = new WebSocket(wsURL);
+      msgWS.onmessage = (event) => {
+        let data = JSON.parse(event.data);
 
-      if (_this.recv_msg.length >= 30) _this.recv_msg.splice(0, 1);
+        _this.recv_msg.push(Number(data.recv_msg));
+        _this.total_r_m = data.total_r_m;
+        _this.total_d_m = data.total_d_m;
+        _this.total_f_m = data.total_f_m;
+      };
+      msgWS.onclose = () => {
+        _this.$toastr.warning("", "ws连接已断开");
+      };
+    }
+
+    function dealMessageInfo() {
+      if (_this.recv_msg.length >= 20) _this.recv_msg.splice(0, 1);
 
       let minMsg = 0;
       for (let i in _this.recv_msg) {
@@ -548,15 +515,12 @@ export default {
       }
 
       _this.rmr = String(minMsg ? (minMsg / 120).toFixed(2) : 0);
-
-      let t = new Date();
-      _this.rmr_update_time = t.toLocaleString("zh-CN", {
-        timeZone: "Asia/Shanghai",
-      });
     }
 
-    this.a = setInterval(main_overview, 3000);
-    this.b = setInterval(get_msg_info, 2000);
+    mainOverview();
+    getMessageInfo();
+    this.a = setInterval(dealOverviewInfo, 3000);
+    this.b = setInterval(dealMessageInfo, 1000);
   },
 
   beforeDestroy() {

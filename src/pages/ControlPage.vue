@@ -31,13 +31,13 @@
                       >
                         <v-card flat>
                           <v-container>
-                            <v-card-title v-text="i.service_name"></v-card-title>
-                            <v-card-subtitle v-text="i.service_docs"></v-card-subtitle>
+                            <v-card-title v-text="i.service"></v-card-title>
+                            <v-card-subtitle v-text="i.docs"></v-card-subtitle>
                             <v-switch
-                              v-model="i.is_enabled"
-                              :label="`Global Enabled: ${i.is_enabled.toString()}`"
+                              v-model="i.enabled"
+                              :label="`Global Enabled: ${i.enabled.toString()}`"
                               @click="
-                                controlServiceEnab(i.service_name, i.is_enabled)
+                                controlServiceEnab(i.service, i.enabled)
                               "
                             ></v-switch>
 
@@ -53,7 +53,7 @@
                                       {{ a }}
                                       <v-icon @click="
                                           editServUserDisable(
-                                            i.service_name,
+                                            i.service,
                                             a,
                                             true
                                           )
@@ -78,7 +78,7 @@
                                         text
                                         @click="
                                           editServUserDisable(
-                                            i.service_name,
+                                            i.service,
                                             cache_text_u,
                                             false
                                           )
@@ -100,7 +100,7 @@
                                       {{ a }}
                                       <v-icon @click="
                                           editServGroupDisable(
-                                            i.service_name,
+                                            i.service,
                                             a,
                                             true
                                           )
@@ -369,9 +369,9 @@ export default {
     },
 
     controlServiceEnab(serve, is_enab) {
-      let enab = is_enab ? 2 : 0;
+      let enab = is_enab ? 1 : 0;
 
-      let url = `${this.isDebug()}/capi/service/control?token=${this.getToken()}&service=${serve}&is_enabled=${enab}`;
+      let url = `${this.isDebug()}/capi/service/edit?token=${this.getToken()}&service=${serve}&global_enabled=${enab}`;
       this.$axios({
         methods: "get",
         url: url,
@@ -398,11 +398,9 @@ export default {
         return;
       }
 
-      let enab = is_enab
-        ? `enabled_user=${user_id}`
-        : `disable_user=${user_id}`;
+      let enab = is_enab ? 1 : 0;
 
-      let url = `${this.isDebug()}/capi/service/control?token=${this.getToken()}&service=${serve}&${enab}`;
+      let url = `${this.isDebug()}/capi/service/edit?token=${this.getToken()}&service=${serve}&enabled=${enab}&user=${user_id}`;
       this.$axios({
         methods: "get",
         url: url,
@@ -433,11 +431,9 @@ export default {
         return;
       }
 
-      let enab = is_enab
-        ? `enabled_group=${group_id}`
-        : `disable_group=${group_id}`;
+      let enab = is_enab ? 1 : 0;
 
-      let url = `${this.isDebug()}/capi/service/control?token=${this.getToken()}&service=${serve}&${enab}`;
+      let url = `${this.isDebug()}/capi/service/edit?token=${this.getToken()}&service=${serve}&enabled=${enab}&group=${group_id}`;
       this.$axios({
         methods: "get",
         url: url,
@@ -468,7 +464,7 @@ export default {
         return;
       }
 
-      let url = `${this.isDebug()}/capi/block/edit?token=${this.getToken()}&is_enabled=${is_enab}&user_id=${user_id}`;
+      let url = `${this.isDebug()}/capi/block/edit?token=${this.getToken()}&enabled=${is_enab}&user_id=${user_id}`;
       this.$axios({
         methods: "get",
         url: url,
@@ -499,7 +495,7 @@ export default {
         return;
       }
 
-      let url = `${this.isDebug()}/capi/block/edit?token=${this.getToken()}&is_enabled=${is_enab}&group_id=${group_id}`;
+      let url = `${this.isDebug()}/capi/block/edit?token=${this.getToken()}&enabled=${is_enab}&group_id=${group_id}`;
       this.$axios({
         methods: "get",
         url: url,

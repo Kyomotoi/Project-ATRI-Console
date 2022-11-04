@@ -157,12 +157,41 @@ export default {
   mounted() {
     let _this = this;
 
+    let token = localStorage.getItem("Authorization");
+
+    let domain = "";
+    let is_debug = localStorage.getItem("IsDebug");
+    if (is_debug === "y") {
+      let host = localStorage.getItem("Host");
+      let port = localStorage.getItem("Port");
+      domain = `http://${host}:${port}`;
+    }
+
     function check_in_debugging() {
       _this.is_debugging =
         localStorage.getItem("IsDebug") === "y" ? true : false;
     }
 
-    setInterval(check_in_debugging, 1000);
+    function check_auth() {
+      let url = `${domain}/capi/auth?token=${token}`;
+      _this
+        .$axios({
+          methods: "get",
+          url: url,
+          headers: {
+            "content-type": "application/json",
+          },
+        })
+        .then((resp) => {
+          let d = resp.data;
+          if (d.status != 200 && d.msg != "OK") {
+            _this.$toastr.error("", "实例出现问题");
+          }
+        });
+    }
+
+    setInterval(check_in_debugging, 5000);
+    setInterval(check_auth, 5000);
   },
 
   methods: {
