@@ -184,8 +184,13 @@ export default {
         })
         .then((resp) => {
           let d = resp.data;
-          if (d.status != 200 && d.msg != "OK") {
+          if (d.status != 200 && d.detail != "OK") {
             _this.$toastr.error("", "实例出现问题");
+            localStorage.removeItem("Authorization");
+            localStorage.removeItem("IsDebug");
+            localStorage.removeItem("Host");
+            localStorage.removeItem("Port");
+            _this.$router.push("/login");
           }
         });
     }
