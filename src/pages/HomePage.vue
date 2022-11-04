@@ -235,14 +235,19 @@ export default {
     let p_docu = document.getElementById("platform_d");
     let p_c = echarts.init(p_docu);
 
-    let host = localStorage.getItem("Host");
-    let port = localStorage.getItem("Port");
+    let host = null;
+    let isDebug = localStorage.getItem("IsDebug");
+    if (isDebug) {
+      host = `${localStorage.getItem("Host")}:${localStorage.getItem("Port")}`;
+    } else {
+      host = document.location.host;
+    }
 
     let moWS = null;
     let msgWS = null;
 
     function mainOverview() {
-      let wsURL = `ws://${host}:${port}/capi/runtime?token=${token}`;
+      let wsURL = `ws://${host}/capi/runtime?token=${token}`;
       moWS = new WebSocket(wsURL);
       moWS.onmessage = (event) => {
         _this.stat_co = "green";
@@ -491,7 +496,7 @@ export default {
     }
 
     function getMessageInfo() {
-      let wsURL = `ws://${host}:${port}/capi/message?token=${token}`;
+      let wsURL = `ws://${host}/capi/message?token=${token}`;
       msgWS = new WebSocket(wsURL);
       msgWS.onmessage = (event) => {
         let data = JSON.parse(event.data);
