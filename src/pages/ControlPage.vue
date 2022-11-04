@@ -380,7 +380,7 @@ export default {
         },
       })
         .then((resp) => {
-          if (resp.data.status != 200) {
+          if (resp.status != 200) {
             this.$toastr.error("", "提交修改失败");
             return;
           }
@@ -409,7 +409,7 @@ export default {
         },
       })
         .then((resp) => {
-          if (resp.data.status != 200) {
+          if (resp.status != 200) {
             this.$toastr.error("", "提交修改失败");
             return;
           }
@@ -442,7 +442,7 @@ export default {
         },
       })
         .then((resp) => {
-          if (resp.data.status != 200) {
+          if (resp.status != 200) {
             this.$toastr.error("", "提交修改失败");
             return;
           }
@@ -464,7 +464,9 @@ export default {
         return;
       }
 
-      let url = `${this.isDebug()}/capi/block/edit?token=${this.getToken()}&enabled=${is_enab}&user_id=${user_id}`;
+      let enab = is_enab ? 1 : 0;
+
+      let url = `${this.isDebug()}/capi/block/edit?token=${this.getToken()}&enabled=${enab}&user_id=${user_id}`;
       this.$axios({
         methods: "get",
         url: url,
@@ -473,7 +475,7 @@ export default {
         },
       })
         .then((resp) => {
-          if (resp.data.status != 200) {
+          if (resp.status != 200) {
             this.$toastr.error("", "提交修改失败");
             return;
           }
@@ -495,7 +497,9 @@ export default {
         return;
       }
 
-      let url = `${this.isDebug()}/capi/block/edit?token=${this.getToken()}&enabled=${is_enab}&group_id=${group_id}`;
+      let enab = is_enab ? 1 : 0;
+
+      let url = `${this.isDebug()}/capi/block/edit?token=${this.getToken()}&enabled=${enab}&group_id=${group_id}`;
       this.$axios({
         methods: "get",
         url: url,
@@ -504,7 +508,7 @@ export default {
         },
       })
         .then((resp) => {
-          if (resp.data.status != 200) {
+          if (resp.status != 200) {
             this.$toastr.error("", "提交修改失败");
             return;
           }
