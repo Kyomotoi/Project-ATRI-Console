@@ -1,0 +1,8 @@
+html {
+  overflow: hidden;
+  height: 100dvh;
+}
+
+a {
+  color: inherit;
+}
