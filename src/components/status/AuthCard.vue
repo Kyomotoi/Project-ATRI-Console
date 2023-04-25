@@ -69,6 +69,8 @@ export default {
   },
   methods: {
     async doConnect() {
+      const log = new ToastWrapper('connect')
+
       const { token, host, port } = this.auth;
 
       const errorMessages = [];
@@ -91,7 +93,7 @@ export default {
       }
 
       if (errorMessages.length > 0) {
-        errorMessages.forEach(errorMessage => toast.error(errorMessage));
+        errorMessages.forEach(errorMessage => log.error(errorMessage));
         return;
       }
 
@@ -103,17 +105,18 @@ export default {
           useAppStore().noATRI = false;
           localStorage.setItem('isDebug', this.debug ? 'y' : 'n');
           localStorage.setItem('token', token);
-          toast.success('连接成功');
+          log.success('连接成功');
         }
       } catch (error: any) {
-        toast.error(error.message);
+        log.error(error.message);
       }
     }
   },
   watch: {
     debug() {
+      const log = new ToastWrapper('connect')
       if (this.debug) {
-        toast.warn('已启用 DEBUG');
+        log.warn('已启用 DEBUG');
       }
       useAppStore().isDebug = this.debug
     }
@@ -123,8 +126,8 @@ export default {
 
 <script lang="ts" setup>
 import { useAppStore } from '@/store/app';
-import { toast } from 'vue3-toastify';
 
 import { API } from '@/core/api/index';
+import { ToastWrapper } from '@/core/notification';
 </script>
 
