@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 import { Notices } from '@/core/notification'
 
-export const useAppStore = defineStore('app', {
+export const GlobalAppStore = defineStore('app', {
   state: () => {
     return { showNav: true, stepNow: '', isDebug: false, noATRI: true, }
   },

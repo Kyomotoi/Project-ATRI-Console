@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { useAppStore } from '@/store/app'
+import { GlobalAppStore } from '@/store/app'
 import { ToastWrapper } from '@/core/notification';
 
 export default {
@@ -48,17 +48,17 @@ export default {
   }),
   methods: {
     changeState() {
-      useAppStore().showNav = !this.showNav;
-      this.showNav = useAppStore().showNav;
+      GlobalAppStore().showNav = !this.showNav;
+      this.showNav = GlobalAppStore().showNav;
     },
 
     doLoginOut() {
       const log = new ToastWrapper('core')
 
-      const noATRI = useAppStore().noATRI;
+      const noATRI = GlobalAppStore().noATRI;
       if (!noATRI) {
         localStorage.clear();
-        useAppStore().noATRI = true;
+        GlobalAppStore().noATRI = true;
         this.$router.push('/');
         log.success('注销成功');
       } else {
@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     isShow() {
-      return useAppStore().showNav;
+      return GlobalAppStore().showNav;
     }
   },
 }

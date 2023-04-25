@@ -16,10 +16,10 @@ import AppSideNav from './layouts/AppSideNav.vue';
 import AppStatBar from './layouts/AppStatBar.vue';
 
 import { computed } from 'vue';
-import { useAppStore } from '@/store/app';
+import { GlobalAppStore } from '@/store/app';
 
 let isShowNav = computed(() => {
-  return useAppStore().showNav ? "cont h-screen w-100" : "h-screen w-100"
+  return GlobalAppStore().showNav ? "cont h-screen w-100" : "h-screen w-100"
 })
 </script>
 

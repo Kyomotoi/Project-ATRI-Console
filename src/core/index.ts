@@ -1,5 +1,5 @@
 import { API } from '@/core/api';
-import { useAppStore } from '@/store/app';
+import { GlobalAppStore } from '@/store/app';
 import { toast } from 'vue3-toastify';
 
 
@@ -13,7 +13,7 @@ export async function isCanLogin() {
   try {
     const result = await api.auth()
     if (result) {
-      useAppStore().noATRI = false;
+      GlobalAppStore().noATRI = false;
       toast.success('连接成功');
     }
   } catch (error: any) {

@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { useAppStore } from '@/store/app';
+import { GlobalAppStore } from '@/store/app';
 
 export default {
   name: 'AppTopBar',
@@ -48,12 +48,12 @@ export default {
   }),
   computed: {
     title() {
-      return `ATRI WebUI - ${useAppStore().stepNow}`;
+      return `ATRI WebUI - ${GlobalAppStore().stepNow}`;
     }
   },
   watch: {
     showNav() {
-      useAppStore().showNav = this.showNav;
+      GlobalAppStore().showNav = this.showNav;
     }
   }
 }

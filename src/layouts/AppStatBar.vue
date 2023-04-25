@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import { useAppStore, Notifications } from '@/store/app';
+import { GlobalAppStore, Notifications } from '@/store/app';
 export default {
   name: 'AppStatBar',
   data: () => {
@@ -89,7 +89,7 @@ export default {
   },
   computed: {
     style(): string {
-      return useAppStore().noATRI ? 'bot-bar' : 'bot-bar is-online';
+      return GlobalAppStore().noATRI ? 'bot-bar' : 'bot-bar is-online';
     },
     notices(): any {
       const notices = Notifications().notices;

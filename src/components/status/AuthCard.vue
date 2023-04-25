@@ -102,7 +102,7 @@ export default {
         const result = await api.auth();
         if (result) {
           this.dialog = false;
-          useAppStore().noATRI = false;
+          GlobalAppStore().noATRI = false;
           localStorage.setItem('isDebug', this.debug ? 'y' : 'n');
           localStorage.setItem('token', token);
           log.success('连接成功');
@@ -118,14 +118,14 @@ export default {
       if (this.debug) {
         log.warn('已启用 DEBUG');
       }
-      useAppStore().isDebug = this.debug
+      GlobalAppStore().isDebug = this.debug
     }
   }
 }
 </script>
 
 <script lang="ts" setup>
-import { useAppStore } from '@/store/app';
+import { GlobalAppStore } from '@/store/app';
 
 import { API } from '@/core/api/index';
 import { ToastWrapper } from '@/core/notification';

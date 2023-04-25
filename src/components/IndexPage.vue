@@ -110,7 +110,7 @@
 export default {
   computed: {
     noATRI() {
-      return useAppStore().noATRI;
+      return GlobalAppStore().noATRI;
     }
   }
 }
@@ -120,9 +120,9 @@ export default {
 import AuthCard from './status/AuthCard.vue';
 import PerformanceCards from '@/components/status/PerformanceCards.vue';
 
-import { useAppStore } from '@/store/app';
+import { GlobalAppStore } from '@/store/app';
 
-useAppStore().stepNow = '首页';
+GlobalAppStore().stepNow = '首页';
 </script>
 
 <style>

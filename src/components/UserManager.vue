@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useAppStore } from '@/store/app';
+import { GlobalAppStore } from '@/store/app';
 
-useAppStore().stepNow = '用户管理';
+GlobalAppStore().stepNow = '用户管理';
 </script>
